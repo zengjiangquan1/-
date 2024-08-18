@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>保存应用账户</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- 引入 jQuery 库 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="loginBox">
+        <h2>保存应用账户</h2>
+        <div id="message" style="color: blueviolet;margin-bottom: 15px;"></div>
+        <form id="saveAccountForm">
+            <div class="item">
+                <input type="text" id="appName" name="appName" required>
+                <label for="appName">应用名称</label>
+            </div>
+            <div class="item">
+                <input type="text" id="username" name="username" required>
+                <label for="username">用户名</label>
+            </div>
+            <div class="item">
+                <input type="password" id="password" name="password" required>
+                <label for="password">密码</label>
+            </div>
+            <button class="btn" id="loginBtn" type="submit">保存
+            </button>
+        </form>
+    </div>
+    <script>
+        $(document).ready(function() {
+            // 使用 jQuery 提交表单
+            var token=localStorage.getItem("token");
+            $("#saveAccountForm").submit(function(event) {
+                event.preventDefault();
+                var appName = $("#appName").val();
+                var username = $("#username").val();
+                var password = $("#password").val();
+                // 发送保存应用账户的请求到后端
+                $.ajax({
+                    type: "POST",
+                    url: "http://127.0.0.1:8000/save_account",
+                    contentType: "application/json",
+                    beforeSend: function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                },
+                    data: JSON.stringify({
+                        "appname": appName,
+                        "username": username,
+                        "password": password
+                    }),
+                    success: function(data) {
+                        console.log(data);
+                        $("#message").html("保存成功")
+                    },
+                    error: function(error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

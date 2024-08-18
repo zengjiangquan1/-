@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Accounts</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div >
+        <h1>账号信息</h1>
+        <table>
+            <thead>
+                <tr>
+                    <div ><th>应用名称</th></div>
+                    <div ><th>用户名</th></div>
+                    <div ><th>密码</th></div>
+                </tr>
+            </thead>
+            <tbody id="accountList">
+                <!-- 这里用 JavaScript 动态添加账号信息 -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 使用 AJAX 请求获取管理员管理的账号信息
+            var token = localStorage.getItem("token");
+            $.ajax({
+                url: "http://127.0.0.1:8000/show_accounts",
+                type: "GET",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                },
+                success: function(response) {
+                    // 在成功获取账号信息后，将数据添加到页面中
+                    response.accounts.forEach(function(account) {
+                        var row = "<tr>" +
+                                    "<td>" +   account.appname   + "</td>" +
+                                    "<td>" +   account.username   + "</td>" +
+                                    "<td>" +   account.password   + "</td>" +
+                                  "</tr>";
+                        $("#accountList").append(row);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Failed to retrieve accounts:", error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

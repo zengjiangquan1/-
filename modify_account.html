@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改账户信息</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="loginBox" >
+        <h2>修改账户信息</h2>
+        <div id="errorMessage" style="color: green;margin-bottom: 15px;"></div>
+        <form id="modifyAccountForm">
+            <div class="item">
+                <input type="text" id="appName" name="appName" required>
+                <label for="appName">应用名称</label>
+            </div>
+            <div class="item">
+                <input type="text" id="newUsername" name="newUsername" required>
+                <label for="newUsername">新用户名：</label>
+            </div>
+            <div class="item">
+                <input type="password" id="newPassword" name="newPassword" required>
+                <label for="newUsername">新密码：</label>
+            </div>
+            <button class="btn"  type="submit">保存</button>
+        </form>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var token = localStorage.getItem("token");
+            $("#modifyAccountForm").submit(function(event) {
+                event.preventDefault();
+                var appName = $("#appName").val();
+                var newUsername = $("#newUsername").val();
+                var newPassword = $("#newPassword").val();
+                // 发送修改账户信息的请求到后端
+                $.ajax({
+                    type: "PUT",
+                    url: "http://127.0.0.1:8000/modify_account",
+                    contentType: "application/json",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+                    },
+                    data: JSON.stringify({
+                        "appname": appName,
+                        "new_username": newUsername,
+                        "new_password": newPassword
+                    }),
+                    success: function(response) {
+                        // 如果修改成功，显示成功消息
+                        alert("账户信息修改成功！");
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.error("Error:", errorThrown);
+                        // 处理错误
+                        alert("修改账户信息时发生错误，请稍后重试。");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

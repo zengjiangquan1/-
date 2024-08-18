@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录/注册</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="loginBox" id="loginContainer">
+        <h2>登录</h2>
+        <div id="errorMessage" style="color: red;margin-bottom: 15px;"></div>
+        <form action="" id="loginForm">
+            <div class="item">
+                <input type="text" id="username" name="username" required>
+                <label for="username">用户名</label>
+            </div>
+            <div class="item">
+                <input type="password"id="password" name="password" required>
+                <label for="password">密码</label>
+            </div>
+            <button class="btn" id="loginBtn" type="submit">登录
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <button class="btn" id="registerBtn">注册
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </form>
+    </div>
+    <div class="loginBox" id="registerContainer" style="display: none;">
+        <h2>注册</h2>
+        <div id="registerMessage" style="color: green; margin-bottom: 15px;"></div>
+        <form id="registerForm">
+            <div class="item">
+                <input type="text"id="newname" name="newname" required>
+                <label for="newname">昵称</label>
+            </div>
+            <div class="item">
+                <input type="text" id="newUsername" name="newUsername" required>
+                <label for="newUsername">新用户名</label>
+            </div>
+            <div class="item">
+                <input type="password" id="newPassword" name="newPassword" required>
+                <label for="newPassword">密码</label>
+            </div>
+            <button type="button" id="backBtn" class="btn">返回登录
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <button type="submit" class="btn" id="submitRegister">注册
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // 切换到注册表单
+            $("#registerBtn").click(function() {
+                $("#loginContainer").hide();
+                $("#registerContainer").show();
+                $("#registerMessage").html("");
+            });
+
+            // 返回登录表单
+            $("#backBtn").click(function() {
+                $("#registerContainer").hide();
+                $("#loginContainer").show();
+                $("#errorMessage").html("");
+            });
+
+            // 提交登录表单
+
+            $("#loginForm").submit(function(event) {
+                event.preventDefault();
+                var username = $("#username").val();
+                var password = $("#password").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://127.0.0.1:8000/login",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        "username": username,
+                        "password": password
+                    }),
+                    success: function(response) {
+                        $("#username").val("");
+                        $("#password").val("");
+                        localStorage.setItem("token", response.access_token);
+                        window.location.href = "choosein.html";
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        var errorMessage = xhr.responseJSON.detail;
+                        $("#errorMessage").html(errorMessage);
+                    }
+                });
+            });
+
+            // 提交注册表单
+            $("#registerForm").submit(function(event) {
+                event.preventDefault();
+                var newname = $("#newname").val();
+                var newUsername = $("#newUsername").val();
+                var newPassword = $("#newPassword").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://127.0.0.1:8000/register_admin",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        "name": newname,
+                        "username": newUsername,
+                        "password": newPassword
+                    }),
+                    success: function(response) {
+                        $("#newname").val("");
+                        $("#newUsername").val("");
+                        $("#newPassword").val("");
+                        $("#registerMessage").html("注册成功！您现在可以登录了。");
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        var errorMessage = xhr.responseJSON.detail;
+                        $("#registerMessage").html(errorMessage);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
